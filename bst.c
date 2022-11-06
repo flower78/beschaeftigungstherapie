@@ -195,6 +195,7 @@ void tree_delete(Tree *tree)
 //working subroutine for tree_is_valid(..) wrapper
 int validity_checker(Node *node)
 {
+    printf("\nChecking for validity\n");
     Node *temp_node;
     temp_node = node;
     printf("Node: %d\n", temp_node->key);
@@ -208,34 +209,51 @@ int validity_checker(Node *node)
     else
     {
 
-        
-        if((*temp_node->smaller_keys).key > temp_node->key | (*temp_node->larger_keys).key < temp_node->key)
+        //check beforehand if children nodes are NULL (if root is unfortunately max-key or min-key of tree) sorry for the mess
+        if(!(temp_node->larger_keys == NULL) || (temp_node->smaller_keys == NULL))
         {
-            printf("There is a fault in the tree at parent node: %p, with key: %d whose smaller child has key: %d and larger child has key: %d", temp_node, temp_node->key, (*temp_node->smaller_keys).key, (*temp_node->larger_keys).key);
-            return -1;
-        }
-        else //if((*temp_node->smaller_keys).key < temp_node->key & (*temp_node->larger_keys).key > temp_node->key)
-        {
-            printf("Subdivision at key: %d with l_kid %d and s_kid %d\n", temp_node->key, (*temp_node->larger_keys).key, (*temp_node->smaller_keys).key);
-            
-            if(temp_node->larger_keys != NULL)
+            if((*temp_node->smaller_keys).key > temp_node->key | (*temp_node->larger_keys).key < temp_node->key)
             {
-                printf("Looking for larger keys\n");
-                int l = validity_checker(temp_node->larger_keys);
+                printf("There is a fault in the tree at parent node: %p, with key: %d whose smaller child has key: %d and larger child has key: %d", temp_node, temp_node->key, (*temp_node->smaller_keys).key, (*temp_node->larger_keys).key);
+                return -1;
+            }
+            else //if((*temp_node->smaller_keys).key < temp_node->key & (*temp_node->larger_keys).key > temp_node->key)
+            {
+                printf("Subdivision at key: %d with l_kid %d and s_kid %d\n", temp_node->key, (*temp_node->larger_keys).key, (*temp_node->smaller_keys).key);
+                
+                
+                if((temp_node->smaller_keys != NULL) && (temp_node->larger_keys == NULL))
+                {
+                    printf("Looking for smaller keys\n");
+                    int l = validity_checker(temp_node->smaller_keys);
+                }
+                else if((temp_node->larger_keys != NULL) && (temp_node->smaller_keys == NULL))
+                {
+                    printf("Looking for larger keys\n");
+                    int s = validity_checker(temp_node->larger_keys);
+                }
+
+                        
             }
                 
-
-            else if(temp_node->smaller_keys != NULL)
+            
+        }
+        else 
+        {
+            if(temp_node->smaller_keys != NULL)
             {
                 printf("Looking for smaller keys\n");
-                int s = validity_checker(temp_node->smaller_keys);
+                int l = validity_checker(temp_node->smaller_keys);
             }
-                
-            return 0;
+            else if(temp_node->larger_keys != NULL)
+            {
+                printf("Looking for larger keys\n");
+                int s = validity_checker(temp_node->larger_keys);
+            }
         }
-
+        
     }
-    return 0;
+   
 }
 
 
@@ -316,65 +334,3 @@ int check_node_and_children(Node *node)
     return 0;
 }
 
-//traversing the tree iteratively
-void iterative_inorder_traversal(Tree *tree)
-{
-    //Array functioning as stack to store in-between values
-    Node **stack_of_nodes;
-    //stack_of_nodes = (Node *)malloc(11 * sizeof(Node));
-    //lowest symbol in the stack, like in the kellerautomat
-    Node *keller_node;
-    keller_node->key = 1000000;
-    *stack_of_nodes = keller_node;
-    //trailng node 
-    Node *trailing_node; 
-    trailing_node = tree->root;
-    int i = 0;
-    int current_key = trailing_node->key;
-    //while( !((trailing_node->key == keller_node->key) || (trailing_node != NULL)) )
-    //while( !(trailing_node->key == keller_node->key) || (trailing_node != NULL) )
-    while(((current_key != keller_node->key) || (trailing_node != NULL)))
-    {
-        if(trailing_node != NULL)
-        {
-            *(stack_of_nodes + i) = trailing_node;
-            //printf("[UP] At address: %p, with key: %d\n", *(stack_of_nodes + i), (**(stack_of_nodes + i)).key);
-            if(trailing_node->smaller_keys == NULL)
-            {
-                //just some arbitrary value to prevent seg fault
-                current_key = 1000;
-                
-                trailing_node = trailing_node->smaller_keys;
-            
-                i++;
-                //printf("[UP] i: %d with trailing node: %p and key: %d\n", i, trailing_node, trailing_node->key);
-                continue;
-            }
-            else
-            {
-                current_key = trailing_node->key;
-                
-            }
-            check_node_and_children(trailing_node);
-            trailing_node = trailing_node->smaller_keys;
-            
-            i++;
-            printf("[UP] i: %d with trailing node: %p\n", i, trailing_node);
-        }
-        
-        else if(trailing_node == NULL)
-        {
-            printf("WIESO KOM ICH NICHT ASL HERI REIN\n");
-            
-            trailing_node = *(stack_of_nodes + i); 
-            printf("[DOWN] At address: %p, with key: \n", trailing_node);//, trailing_node->key);
-            
-            trailing_node = trailing_node->larger_keys;
-            i--;
-            printf("[DOWN] i: %d", i);
-            
-        }
-        
-    }
-    printf("Last test for while loop: stack: %d node: %d \n", (trailing_node->key != keller_node->key), (trailing_node != NULL));
-}
