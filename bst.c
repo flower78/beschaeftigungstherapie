@@ -98,7 +98,7 @@ int tree_find_key_recursive(Tree *tree, int key)
     }
     else
     {
-        printf("%d is apparently not contained within %p");
+        printf("%d is apparently not contained within %p", key, tree);
     }
     return result;
 }
@@ -161,7 +161,6 @@ Tree* tree_deep_copy(Tree *tree)
 {
     Tree *copied_tree;
     copied_tree = tree_create();
-    printf("SEEEEEEEERS\n");
     int *pointer_to_key;
     int *pointer_topkek;
     pointer_topkek = traverse_tree_inorder(tree->root, pointer_to_key);
@@ -212,7 +211,7 @@ int validity_checker(Node *node)
         
         if((*temp_node->smaller_keys).key > temp_node->key | (*temp_node->larger_keys).key < temp_node->key)
         {
-            printf("There is a fault in the tree at parent node: %p, with key: %d whose smaller child has key: %d and larger child has key: %d", temp_node, temp_node->key, (*temp_node->smaller_keys), (*temp_node->larger_keys));
+            printf("There is a fault in the tree at parent node: %p, with key: %d whose smaller child has key: %d and larger child has key: %d", temp_node, temp_node->key, (*temp_node->smaller_keys).key, (*temp_node->larger_keys).key);
             return -1;
         }
         else //if((*temp_node->smaller_keys).key < temp_node->key & (*temp_node->larger_keys).key > temp_node->key)
@@ -249,21 +248,16 @@ int recursive_finder(Node *tree_root, int key)
         printf("Key %d is contained within tree [REC]\n", key);
         return 1;
     }
-    else if(tree_root->key == NULL)
-    {
-        //printf("Key %d is apparently not contained within the BST at %p\n", key, tree_root);
-        return -1;
-    }
     else
     {
         //printf("I am being called at key %d\n", key);
         if(key > tree_root->key)
         {
-            tree_find_key_recursive(tree_root->larger_keys, key);
+            recursive_finder(tree_root->larger_keys, key);
         }
         else if (key < tree_root->key)
         {
-            tree_find_key_recursive(tree_root->smaller_keys, key);
+            recursive_finder(tree_root->smaller_keys, key);
         }
     }
     //return 0 if it wasn't found by the time of reaching the base case
@@ -297,7 +291,7 @@ int* traverse_tree_inorder(Node *node, int* ret_pointer)
     }
     else
     {
-        return -1;
+        return NULL;
     }
 }
 
@@ -327,7 +321,7 @@ void iterative_inorder_traversal(Tree *tree)
 {
     //Array functioning as stack to store in-between values
     Node **stack_of_nodes;
-    stack_of_nodes = (Node *)malloc(11 * sizeof(Node));
+    //stack_of_nodes = (Node *)malloc(11 * sizeof(Node));
     //lowest symbol in the stack, like in the kellerautomat
     Node *keller_node;
     keller_node->key = 1000000;

@@ -46,18 +46,13 @@ int main()
     Tree *new_tree;
     new_tree = tree_deep_copy(example_tree);
 
-    // IV
-
-    //check tree for validity
-    tree_is_valid(example_tree);
-
 
     //Test the functions that check for availability of keys 
     for(int j = 0; j < 10; j++)
     {
         int random_number = arr_of_random_keys[j];
         
-        // V
+        // IV
 
         //All keys need to be contained
         int is_contained_rec = tree_find_key_recursive(example_tree, random_number );
@@ -68,7 +63,10 @@ int main()
         //printf("Key: %d is contained at: %p\n", (start_of_tree + 1 * j), (start_of_tree  + 1 * j)->key);
     }
 
+    // V
 
+    //check tree for validity
+    tree_is_valid(example_tree);
 
     // VI
 
